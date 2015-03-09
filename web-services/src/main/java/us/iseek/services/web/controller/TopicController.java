@@ -29,6 +29,7 @@ import us.iseek.model.topics.HashTag;
 import us.iseek.model.topics.Subscription;
 import us.iseek.model.user.User;
 import us.iseek.services.ITopicService;
+import us.iseek.services.web.utils.WebUtils;
 
 /**
  * Provides REST services to manage topics being discussed in the system.
@@ -74,7 +75,7 @@ public class TopicController {
 		log.debug("type=RECEIVED_REST_CREATE_TOPIC_REQUEST, " + "desc=Received REST request to create topic, param="
 				+ displayName);
 
-		return this.topicService.createTopic(displayName);
+		return this.topicService.createTopic(WebUtils.getSafeString(displayName));
 	}
 
 	/**

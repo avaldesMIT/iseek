@@ -112,7 +112,7 @@ public class TopicControllerTest {
 	@Test
 	public void testThatCreateTopicDelegatesCallToService() {
 		// Create test data
-		String displayName = "DISPLAY_NAME";
+		String displayName = "DISPLAY NAME";
 		HashTag topic = EasyMock.createNiceMock(HashTag.class);
 
 		// Set expectations
@@ -126,6 +126,28 @@ public class TopicControllerTest {
 		Assert.assertEquals("CreateTopic should return value returned by delegate.", topic, actualTopic);
 	}
 
+	@Test
+	public void testThatCreateTopicRemovesSpecialCharactersFromDisplayName() {
+		// Create test data
+		String displayName = "DISPLAY_NAME\"!@#'=,";
+		HashTag topic = EasyMock.createNiceMock(HashTag.class);
+
+		// Set expectations
+		Capture<String> captureDisplayName = EasyMock.newCapture();
+		EasyMock.expect(this.topicService.createTopic(EasyMock.capture(captureDisplayName))).andReturn(topic).once();
+
+		// Define expected behavior
+		String expectedDisplayName = "DISPLAYNAME";
+		
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		this.topicController.createTopic(displayName);
+		String actualDisplayName = captureDisplayName.getValue();
+		Assert.assertEquals("CreateTopic should strip special characters from display name.", expectedDisplayName, actualDisplayName);
+	}
+	
 	@Test
 	public void testThatSubscribeDelegatesCallToService() throws UnknownLocationException {
 		// Create test data
