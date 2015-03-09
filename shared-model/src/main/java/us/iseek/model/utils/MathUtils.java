@@ -18,7 +18,7 @@ import java.math.RoundingMode;
  * @author Armando Valdes
  * @since 1.0
  */
-public class MathUtils {
+public final class MathUtils {
 
 	/** The precision used in arithmetic calculations. */
 	private static final int DECIMAL_PRECISION = 10;

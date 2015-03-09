@@ -112,25 +112,6 @@ public class MathUtilsTest {
 	}
 
 	@Test
-	public void testThatMathUtilsConstructorIsPrivate() throws SecurityException, NoSuchMethodException {
-
-		Constructor<MathUtils> constructor = MathUtils.class.getDeclaredConstructor();
-		Assert.assertTrue("Utility class should have private constructor.",
-				Modifier.isPrivate(constructor.getModifiers()));
-	}
-
-	@Test
-	public void testThatMathUtilsCanBeConstructedWithoutRaisingExceptions() throws SecurityException,
-			NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException,
-			InvocationTargetException {
-
-		Constructor<MathUtils> constructor = MathUtils.class.getDeclaredConstructor();
-		constructor.setAccessible(true);
-		MathUtils instance = constructor.newInstance();
-		Assert.assertTrue("Class instance should be math utils.", instance instanceof MathUtils);
-	}
-
-	@Test
 	public void testThatCompareToReturnsTrueIfNumbersAreEqualToTheTenthDecimal() {
 		// Create test data
 		Double value1 = Double.valueOf(1.1234567891);
@@ -158,5 +139,24 @@ public class MathUtilsTest {
 
 		Assert.assertFalse("CompareTo should return true if numbers are not equal to the tenth decimal.",
 				MathUtils.compare(value1, value2));
+	}
+
+	@Test
+	public void testThatMathUtilsConstructorIsPrivate() throws SecurityException, NoSuchMethodException {
+
+		Constructor<MathUtils> constructor = MathUtils.class.getDeclaredConstructor();
+		Assert.assertTrue("Utility class should have private constructor.",
+				Modifier.isPrivate(constructor.getModifiers()));
+	}
+
+	@Test
+	public void testThatMathUtilsCanBeConstructedWithoutRaisingExceptions() throws SecurityException,
+			NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException,
+			InvocationTargetException {
+
+		Constructor<MathUtils> constructor = MathUtils.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		MathUtils instance = constructor.newInstance();
+		Assert.assertTrue("Class instance should be math utils.", instance instanceof MathUtils);
 	}
 }
