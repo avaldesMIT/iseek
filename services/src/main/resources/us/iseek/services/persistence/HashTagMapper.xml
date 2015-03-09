@@ -14,7 +14,7 @@
 			h.hash_tag_id as id,
 			h.display_name as displayName
 		FROM hash_tags h
-		WHERE h.hash_tag_id = #{value}
+		WHERE h.display_name = #{value}
 	</select>
 
 	<select id="getByArea" resultType="HashTag" parameterType="Area">

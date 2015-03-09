@@ -95,7 +95,8 @@ CREATE TABLE `hash_tags` (
   `upd_user` varchar(12) default NULL,
   `upd_ts` timestamp NULL default NULL,
   PRIMARY KEY  (`hash_tag_id`),
-  UNIQUE KEY `hash_tag_id` (`hash_tag_id`)
+  UNIQUE KEY `hash_tag_id` (`hash_tag_id`),
+  UNIQUE KEY `display_name` (`display_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TRIGGER `hash_tags_insert` BEFORE INSERT ON `hash_tags` 
