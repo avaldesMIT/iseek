@@ -106,6 +106,47 @@ public class TopicServiceTest {
 	}
 
 	@Test
+	public void testThatCreateTopicRetrievesExistingHashTagIfThereIsOneWithTheSameDisplayName() {
+		// Create test data
+		String displayName = "DISPLAY_NAME";
+
+		// Set mock expectations
+		HashTag existingHashTag = EasyMock.createNiceMock(HashTag.class);
+		EasyMock.expect(this.hashTagMapper.get(displayName)).andReturn(existingHashTag).once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		HashTag actualHashTag = this.topicService.createTopic(displayName);
+		Assert.assertEquals("CreateTopic should retrieve existing hash tag if there is one with the same display name",
+				existingHashTag, actualHashTag);
+	}
+
+	@Test
+	public void testThatCreateTopicDoesNotCreateNewHashTagIfThereIsOneWithTheSameDisplayName() {
+		// Create test data
+		String displayName = "DISPLAY_NAME";
+
+		// Create mocks
+		this.hashTagMapper = EasyMock.createStrictMock(HashTagMapper.class);
+		this.topicService.setHashTagMapper(this.hashTagMapper);
+		
+		// Set mock expectations
+		HashTag existingHashTag = EasyMock.createNiceMock(HashTag.class);
+		EasyMock.expect(this.hashTagMapper.get(displayName)).andReturn(existingHashTag).once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		this.topicService.createTopic(displayName);
+		
+		// Verify insert was not called
+		EasyMock.verify(this.hashTagMapper);
+	}
+
+	@Test
 	public void testThatCreateTopicInsertsTopicToTheDatabase() {
 		// Create test data
 		String displayName = "DISPLAY_NAME";

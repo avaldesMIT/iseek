@@ -61,12 +61,17 @@ public class TopicService implements ITopicService {
 	 * {@inheritDoc}
 	 */
 	public HashTag createTopic(String displayName) {
-		// Create new hash tag
-		HashTag hashTag = new HashTag();
-		hashTag.setDisplayName(displayName);
-
-		// Insert hash tag
-		this.hashTagMapper.insert(hashTag);
+		// Determine if there already is a hash tag with this name
+		HashTag hashTag = this.hashTagMapper.get(displayName);
+		
+		// If there is no existing hash tag, create a new one
+		if (hashTag == null) {
+			hashTag = new HashTag();
+			hashTag.setDisplayName(displayName);
+	
+			// Insert hash tag
+			this.hashTagMapper.insert(hashTag);
+		}
 
 		// Retrieve and return hash tag
 		return hashTag;
