@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="us.iseek.services.persistence.SubscriptionMapper">
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="User">
+		INSERT INTO subscriptions (renewal_ts, user_id, hash_tag_id, subscription_lat, subscription_lon)
+		values (NOW(),#{user.id},#{topic.id},#{location.latitude},#{location.longitude})
+	</insert>
+
+	<select id="get" resultMap="subscriptionResultMap">
+		<include refid="subscriptionSelect"/>
+		<include refid="subscriptionJoins"/>
+		WHERE s.subscription_id = #{value}
+	</select>
+
+	<!-- Subscription search(User user, HashTag hashTag, Location location) -->
+	<select id="search" resultMap="subscriptionResultMap">
+		<include refid="subscriptionSelect"/>
+		<include refid="subscriptionJoins"/>
+		WHERE u.user_id = #{param1.id}
+		AND h.hash_tag_id = #{param2.id}
+		AND s.subscription_lat = #{param3.latitude}
+		AND s.subscription_lon = #{param3.longitude}
+	</select>
+	
+	<update id="renew">
+		UPDATE subscriptions s
+		SET s.renewal_ts = NOW()
+		WHERE s.subscription_id = #{value}
+	</update>
+	
+	<!-- updateLocation(Long subscriptionId, Location location) -->
+	<update id="updateLocation" parameterType="Location">
+		UPDATE subscriptions s
+		SET s.subscription_lat = #{param2.latitude}
+			s.subscription_lon = #{param2.longitude}
+		WHERE s.subscription_id = #{param1}
+	</update>
+
+	<update id="expire">
+		UPDATE subscriptions s
+		SET s.renewal_ts = (s.renewal_ts - <include refid="subscriptionLengthInterval"/>)
+		WHERE s.subscription_id = #{value}
+	</update>
+
+	<sql id="subscriptionSelect">
+		SELECT
+			s.subscription_id as id,
+			TIMESTAMPDIFF(SECOND, NOW(), s.renewal_ts + <include refid="subscriptionLengthInterval"/>) as timeToLive,
+			s.subscription_lat as subscriptionLatitude,
+			s.subscription_lon as subscriptionLongitude,
+			u.user_id as userId,
+			u.fb_profile_id as userFacebookProfileId,
+			u.screen_name as userScreenName,
+			u.last_activity as userLastActivity,
+			u.last_lat as userLastLatitude,
+			u.last_lon as userLastLongitude,
+			p.broadcast_loc as preferencesBroadcastLocation,
+			p.show_profile_pic as preferencesShowProfilePicture,
+			h.hash_tag_id as hashTagId,
+			h.display_name as hashTagDisplayName
+	</sql>
+	
+	<sql id="subscriptionJoins">
+		FROM subscriptions s
+		INNER JOIN users u ON s.user_id = u.user_id
+		INNER JOIN user_preferences p ON p.user_id = u.user_id
+		INNER JOIN hash_tags h ON s.hash_tag_id = h.hash_tag_id
+	</sql>
+
+	<sql id="subscriptionFilterExpiredSubscriptions">
+		AND s.renewal_ts &gt; (NOW() - <include refid="us.iseek.services.persistence.SubscriptionMapper.subscriptionLengthInterval"/>)
+	</sql>
+
+	<sql id="subscriptionLengthInterval">
+		INTERVAL 15 MINUTE
+	</sql>
+
+	<resultMap id="subscriptionResultMap" type="Subscription">
+		<result property="id" column="id" />
+		<result property="timeToLive" column="timeToLive" />
+		<association property="location" resultMap="us.iseek.services.persistence.UserMapper.locationResultMap" columnPrefix="subscription" />
+		<association property="user" resultMap="us.iseek.services.persistence.UserMapper.userResultMap" />
+		<association property="topic" resultMap="us.iseek.services.persistence.HashTagMapper.hashTagResultMap" />
+	</resultMap>
+</mapper>

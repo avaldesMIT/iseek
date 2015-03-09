@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="us.iseek.services.persistence.PreferencesMapper">
+
+	<!-- void insert(Long userId, Preferences preferences) -->
+	<insert id="insert" parameterType="map">
+		INSERT INTO user_preferences (user_id, broadcast_loc, show_profile_pic)
+		values (#{param1},#{param2.broadcastLocation},#{param2.showProfilePicture})
+	</insert>
+
+	<!-- void update(Long userId, Preferences preferences) -->
+	<update id="update" parameterType="Preferences">
+		UPDATE user_preferences
+		SET broadcast_loc = #{param2.broadcastLocation},
+			show_profile_pic = #{param2.showProfilePicture}
+		WHERE user_id = #{param1}
+	</update>
+
+	<resultMap id="preferencesResultMap" type="Preferences">
+		<result property="broadcastLocation" column="preferencesBroadcastLocation" />
+		<result property="showProfilePicture" column="preferencesShowProfilePicture" />
+	</resultMap>
+</mapper>

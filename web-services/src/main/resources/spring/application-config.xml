@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation=" 
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd 
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd 
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/context/spring-jdbc-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+	<!-- Peristance Framework -->
+	<bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test" />
+		<property name="username" value="root" />
+		<property name="password" value="EMCotini33!" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="us.iseek.services.persistence" />
+	</bean>
+	
+	<!-- Controllers -->	
+	<bean id="userController" class="us.iseek.services.web.controller.UserController">
+		<property name="userService" ref="userService" />
+	</bean>
+	<bean id="topicController" class="us.iseek.services.web.controller.TopicController">
+		<property name="topicService" ref="topicService" />
+	</bean>
+	<bean id="messageController" class="us.iseek.services.web.controller.MessageController">
+		<property name="messageService" ref="messageService" />
+	</bean>
+	
+	<!-- Services -->
+	<bean id="userService" class="us.iseek.services.UserService">
+		<property name="userMapper" ref="userMapper" />
+		<property name="preferencesMapper" ref="preferencesMapper" />
+	</bean>
+	<bean id="topicService" class="us.iseek.services.TopicService">
+		<property name="userMapper" ref="userMapper" />
+		<property name="hashTagMapper" ref="hashTagMapper" />
+		<property name="subscriptionMapper" ref="subscriptionMapper" />
+		<property name="measurementConverterFactory" ref="measurementConverterFactory" />
+	</bean>
+	<bean id="messageService" class="us.iseek.services.MessageService">
+		<property name="messageMapper" ref="messageMapper" />
+		<property name="publicMessageMapper" ref="publicMessageMapper" />
+		<property name="privateMessageMapper" ref="privateMessageMapper" />
+		<property name="messageBroadcasterFactory" ref="messageBroadcasterFactory" />
+	</bean>
+
+	<!-- Factories -->
+	<bean id="messageBroadcasterFactory" class="us.iseek.services.messaging.MessageBroadcasterFactory">
+		<property name="messageBroadcasterMap">
+			<map>
+				<entry>
+					<key><util:constant static-field="us.iseek.model.enums.MessageType.PUBLIC"/></key>
+					<ref bean="publicMessageBroadcaster" />
+				</entry>
+				<entry>
+					<key><util:constant static-field="us.iseek.model.enums.MessageType.PRIVATE"/></key>
+					<ref bean="privateMessageBroadcaster" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean id="measurementConverterFactory" class="us.iseek.model.converters.measurement.MeasurementConverterFactory">
+		<property name="converterMap">
+			<map>
+				<entry>
+					<key><util:constant static-field="us.iseek.model.enums.MeasureUnit.MILES"/></key>
+					<ref bean="milesConverter" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Message Broadcasters -->
+	<bean id="publicMessageBroadcaster" class="us.iseek.services.messaging.PublicMessageBroadcaster" />
+	<bean id="privateMessageBroadcaster" class="us.iseek.services.messaging.PrivateMessageBroadcaster" />
+	
+	<!-- Converters -->
+	<bean id="milesConverter" class="us.iseek.model.converters.measurement.MilesConverter"/>
+
+	<!-- Transaction Management -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
+	
+    <aop:config>
+        <aop:pointcut id="serviceOperation" expression="execution(* us.iseek.services.*Service.*(..))"/>
+        <aop:advisor pointcut-ref="serviceOperation" advice-ref="transactionAdvice"/>
+    </aop:config>	
+</beans>

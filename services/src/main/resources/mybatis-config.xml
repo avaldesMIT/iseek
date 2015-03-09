@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="us.iseek.model.gps.Area" alias="Area" />
+		<typeAlias type="us.iseek.model.gps.Location" alias="Location" />
+
+		<typeAlias type="us.iseek.model.user.User" alias="User" />
+		<typeAlias type="us.iseek.model.user.Preferences" alias="Preferences" />
+
+		<typeAlias type="us.iseek.model.topics.HashTag" alias="HashTag" />
+		<typeAlias type="us.iseek.model.topics.Subscription" alias="Subscription" />
+
+		<typeAlias type="us.iseek.model.communication.Message" alias="Message" />
+		<typeAlias type="us.iseek.model.communication.PublicMessage" alias="PublicMessage" />
+		<typeAlias type="us.iseek.model.communication.PrivateMessage" alias="PrivateMessage" />
+	</typeAliases>
+</configuration>

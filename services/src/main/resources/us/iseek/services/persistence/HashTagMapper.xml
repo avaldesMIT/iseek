@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="us.iseek.services.persistence.HashTagMapper">
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="HashTag">
+		INSERT INTO hash_tags (display_name)
+		values (#{displayName})
+	</insert>
+
+	<select id="get" resultType="HashTag">
+		SELECT
+			h.hash_tag_id as id,
+			h.display_name as displayName
+		FROM hash_tags h
+		WHERE h.hash_tag_id = #{value}
+	</select>
+
+	<select id="getByArea" resultType="HashTag" parameterType="Area">
+		SELECT
+			h.hash_tag_id as id,
+			h.display_name as displayName
+		FROM hash_tags h
+		INNER JOIN subscriptions s on s.hash_tag_id = h.hash_tag_id
+		WHERE s.subscription_lat &lt; #{startPoint.latitude}
+		AND s.subscription_lon &gt; #{startPoint.longitude}
+		AND s.subscription_lat &gt; #{endPoint.latitude}
+		AND s.subscription_lon &lt; #{endPoint.longitude}
+		<include refid="us.iseek.services.persistence.SubscriptionMapper.subscriptionFilterExpiredSubscriptions"/> 
+	</select>
+	
+	<resultMap id="hashTagResultMap" type="HashTag">
+		<result property="id" column="hashTagId" />
+		<result property="displayName" column="hashTagDisplayName" />
+	</resultMap>	
+</mapper>

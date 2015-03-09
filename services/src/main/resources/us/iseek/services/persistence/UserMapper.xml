@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="us.iseek.services.persistence.UserMapper">
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="User">
+		INSERT INTO users (fb_profile_id, screen_name, last_lat, last_lon, last_activity)
+		values (#{facebookProfileId},#{screenName},#{lastLocation.latitude},#{lastLocation.longitude},NOW())
+	</insert>
+
+	<select id="getUserId">
+		SELECT
+			user_id
+		FROM users
+		WHERE fb_profile_id = #{value}
+	</select>
+
+	<select id="get" resultMap="userResultMap">
+		<include refid="userSelect"/>
+		<include refid="userJoins"/>
+		WHERE u.user_id = #{value}
+	</select>
+
+	<select id="getByFacebookProfileId" resultMap="userResultMap">
+		<include refid="userSelect"/>
+		<include refid="userJoins"/>
+		WHERE u.fb_profile_id = #{value}
+	</select>
+
+	<!-- List<User> getUsers(HashTag topic, Location location) -->
+	<select id="getUsers" parameterType="map" resultMap="userResultMap">
+		<include refid="userSelect"/>
+		<include refid="userJoins"/>
+		INNER JOIN subscriptions s on s.user_id = u.user_id
+		INNER JOIN hash_tags h ON h.hash_tag_id = s.hash_tag_id
+		WHERE h.hash_tag_id = #{param1.id}
+		AND s.subscription_lat = #{param2.latitude}
+		AND s.subscription_lon = #{param2.longitude}
+		<include refid="us.iseek.services.persistence.SubscriptionMapper.subscriptionFilterExpiredSubscriptions"/>
+	</select>
+	
+	<!-- void updateLocation(Long userId, Location location) -->
+	<update id="updateLocation" parameterType="map">
+		UPDATE users u
+		SET u.last_lat = #{param2.latitude},
+			u.last_lon = #{param2.longitude}
+		WHERE u.user_id = #{param1}
+	</update>
+	
+	<!-- updateScreenName(Long userId, String screenName) -->
+	<update id="updateScreenName" parameterType="map">
+		UPDATE users u
+		SET u.screen_name = #{param2}
+		WHERE u.user_id = #{param1}
+	</update>
+
+	<sql id="userSelect">
+		SELECT
+			u.user_id as userId,
+			u.fb_profile_id as userFacebookProfileId,
+			u.screen_name as userScreenName,
+			u.last_activity as userLastActivity,
+			u.last_lat as userLastLatitude,
+			u.last_lon as userLastLongitude,
+			p.broadcast_loc as preferencesBroadcastLocation,
+			p.show_profile_pic as preferencesShowProfilePicture
+	</sql>
+	
+	<sql id="userJoins">
+		FROM users u
+		INNER JOIN user_preferences p ON p.user_id = u.user_id
+	</sql>
+	
+	<resultMap id="locationResultMap" type="Location">
+		<result property="latitude" column="Latitude" />
+		<result property="longitude" column="Longitude" />
+	</resultMap>
+	
+	<resultMap id="userResultMap" type="User">
+		<result property="id" column="userId" />
+		<result property="facebookProfileId" column="userFacebookProfileId" />
+		<result property="screenName" column="userScreenName" />
+		<result property="lastActivity" column="userLastActivity" />
+		<association property="lastLocation" resultMap="locationResultMap" columnPrefix="userLast" />
+		<association property="preferences" resultMap="us.iseek.services.persistence.PreferencesMapper.preferencesResultMap" />
+	</resultMap>
+</mapper>
