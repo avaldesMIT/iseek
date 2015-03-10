@@ -45,6 +45,24 @@ public interface ITopicService {
 	public HashTag createTopic(String displayName);
 
 	/**
+	 * Retrieves the subscription querying by the parameters provided.
+	 * 
+	 * @param user
+	 *            - The ID for the user for which the subscriptions are being
+	 *            retrieved.
+	 * @param hashTag
+	 *            - The ID for the topic for which the subscriptions are being
+	 *            retrieved.
+	 * @param location
+	 *            - The location for which the subscriptions are being
+	 *            retrieved. Note that topics will be retrieved for this
+	 *            location and a radial area around this location.
+	 * @return The intersection of all subscriptions for the user, hashTag, and
+	 *         location provided.
+	 */
+	public List<Subscription> findSubscriptions(Long userId, Long topicId, Location location);
+
+	/**
 	 * Adds a user to a topic of conversation. Requires that the user referenced
 	 * by the ID provided has a known location.
 	 * 

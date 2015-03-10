@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import us.iseek.model.exception.UnknownLocationException;
 import us.iseek.model.gps.Location;
 import us.iseek.model.request.topic.CreateSubscriptionRequest;
+import us.iseek.model.request.topic.FindSubscriptionsRequest;
 import us.iseek.model.request.topic.GetUsersInTopicRequest;
 import us.iseek.model.request.topic.UpdateSubscriptionLocationRequest;
 import us.iseek.model.topics.HashTag;
@@ -170,6 +171,27 @@ public class TopicController {
 				+ "desc=Received REST request to get all users in topic, param=" + getUsersInTopicRequest);
 		return this.topicService.getUsersInTopic(getUsersInTopicRequest.getTopic(),
 				getUsersInTopicRequest.getLocation());
+	}
+
+	/**
+	 * Retrieves the subscription querying by the parameters provided.
+	 * 
+	 * @param findSubscriptionsRequest
+	 *            - The request to find user subscriptions to topic, including
+	 *            the ID for the user for which the subscriptions are being, the
+	 *            ID for the topic for which the subscriptions are being, and
+	 *            the location for which the subscriptions are being retrieved.
+	 *            Note that topics will be retrieved for this location and a
+	 *            radial area around this location.
+	 * @return The intersection of all subscriptions for the user, hashTag, and
+	 *         location provided.
+	 */
+	@RequestMapping(value = "/subscription/find", method = RequestMethod.GET)
+	public List<Subscription> findSubscriptions(@RequestBody FindSubscriptionsRequest findSubscriptionsRequest) {
+		log.debug("type=RECEIVED_REST_FIND_SUBSCRIPTIONS_REQUEST, "
+				+ "desc=Received REST request to fins subscriptions, param=" + findSubscriptionsRequest);
+		return this.topicService.findSubscriptions(findSubscriptionsRequest.getUserId(),
+				findSubscriptionsRequest.getTopicId(), findSubscriptionsRequest.getLocation());
 	}
 
 	/**

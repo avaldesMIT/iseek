@@ -41,6 +41,7 @@ import us.iseek.services.persistence.UserMapper;
 public class TopicServiceTest {
 
 	private static final Long HASH_TAG_ID = Long.valueOf(15123L);
+	private static final Long SUBSCRIPTION_ID = Long.valueOf(58122L);
 
 	private TopicService topicService;
 
@@ -131,7 +132,7 @@ public class TopicServiceTest {
 		// Create mocks
 		this.hashTagMapper = EasyMock.createStrictMock(HashTagMapper.class);
 		this.topicService.setHashTagMapper(this.hashTagMapper);
-		
+
 		// Set mock expectations
 		HashTag existingHashTag = EasyMock.createNiceMock(HashTag.class);
 		EasyMock.expect(this.hashTagMapper.get(displayName)).andReturn(existingHashTag).once();
@@ -141,7 +142,7 @@ public class TopicServiceTest {
 
 		// Test entity
 		this.topicService.createTopic(displayName);
-		
+
 		// Verify insert was not called
 		EasyMock.verify(this.hashTagMapper);
 	}
@@ -279,6 +280,72 @@ public class TopicServiceTest {
 	}
 
 	@Test
+	public void testThatSubscribeRetrievesNewlyCreatedSubscriptionFromDatabase() throws UnknownLocationException {
+		// Create test data
+		Long userId = Long.valueOf(5123L);
+		HashTag topic = EasyMock.createNiceMock(HashTag.class);
+
+		User user = EasyMock.createNiceMock(User.class);
+		EasyMock.replay(user);
+
+		Subscription newSubscription = EasyMock.createNiceMock(Subscription.class);
+
+		// Create mock expectations
+		EasyMock.expect(this.userMapper.get(userId)).andReturn(user).once();
+
+		this.subscriptionMapper.insert(EasyMock.anyObject(Subscription.class));
+		EasyMock.expectLastCall().once();
+		EasyMock.expect(this.subscriptionMapper.get(EasyMock.anyLong())).andReturn(newSubscription).anyTimes();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		Subscription actualSubscription = this.topicService.subscribe(userId, topic);
+		Assert.assertNotNull("Subscribe should return non-null subscription.", actualSubscription);
+		Assert.assertEquals("Subscribe should return subscription retrieved from database", newSubscription,
+				actualSubscription);
+	}
+
+	@Test
+	public void testThatSubscribeUsesSubscriptionIdFromInsertToRetrieveNewSubscriptionFromDatabase()
+			throws UnknownLocationException {
+		// Create test data
+		Long userId = Long.valueOf(5123L);
+		HashTag topic = EasyMock.createNiceMock(HashTag.class);
+
+		User user = EasyMock.createNiceMock(User.class);
+		EasyMock.replay(user);
+
+		// Create mock expectations
+		EasyMock.expect(this.userMapper.get(userId)).andReturn(user).once();
+
+		this.subscriptionMapper.insert(EasyMock.anyObject(Subscription.class));
+		EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+			/**
+			 * {@inheritDoc}
+			 */
+			public Void answer() throws Throwable {
+				// Set subscriptions's ID after insert
+				((Subscription) EasyMock.getCurrentArguments()[0]).setId(SUBSCRIPTION_ID);
+				return null;
+			}
+		}).once();
+
+		Capture<Long> captureSubscriptionId = EasyMock.newCapture();
+		EasyMock.expect(this.subscriptionMapper.get(EasyMock.captureLong(captureSubscriptionId)))
+				.andReturn(EasyMock.createNiceMock(Subscription.class)).anyTimes();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		this.topicService.subscribe(userId, topic);
+		Assert.assertEquals("Subscribe should retrieve subscription with subscription ID from insert", SUBSCRIPTION_ID,
+				captureSubscriptionId.getValue());
+	}
+
+	@Test
 	public void testThatRenewSubscriptionRenewsTheSubscription() {
 		// Create test data
 		Long subscriptionId = Long.valueOf(59123L);
@@ -410,6 +477,55 @@ public class TopicServiceTest {
 		Assert.assertEquals(
 				"GetUsersInTopic should return all the users subscribed to the topic in the location provided", users,
 				actualUsers);
+	}
+
+	@Test
+	public void testThatFindSubscriptionsGetsSubscriptionsFiveMilesAroundLocation() throws ConversionException {
+		// Create test data
+		Long userId = Long.valueOf(5812L);
+		Long topicId = Long.valueOf(9512L);
+
+		Area area = EasyMock.createNiceMock(Area.class);
+		Location location = EasyMock.createNiceMock(Location.class);
+		EasyMock.expect(location.getRadialArea(Double.valueOf(5d), MeasureUnit.MILES)).andReturn(area).anyTimes();
+		EasyMock.replay(location);
+
+		List<Subscription> subscriptions = new ArrayList<Subscription>();
+		subscriptions.add(EasyMock.createNiceMock(Subscription.class));
+
+		// Set mock expectations
+		EasyMock.expect(this.subscriptionMapper.search(userId, topicId, area)).andReturn(subscriptions).once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		List<Subscription> actualSubscriptions = this.topicService.findSubscriptions(userId, topicId, location);
+		Assert.assertEquals("Returned subscriptions should match the subscriptions returned by the database",
+				subscriptions, actualSubscriptions);
+	}
+
+	@Test
+	public void testThatFindSubscriptionsReturnsEmptyListIfThereIsAProblemWithTheMeasurementConversion()
+			throws ConversionException {
+
+		// Create test data
+		Long userId = Long.valueOf(5812L);
+		Long topicId = Long.valueOf(9512L);
+		Location location = EasyMock.createNiceMock(Location.class);
+
+		// Set mock expectations
+		EasyMock.expect(location.getRadialArea(EasyMock.anyDouble(), EasyMock.anyObject(MeasureUnit.class)))
+				.andThrow(new ConversionException("TEST")).anyTimes();
+		EasyMock.replay(location);
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		List<Subscription> actualSubscriptions = this.topicService.findSubscriptions(userId, topicId, location);
+		Assert.assertEquals("Returned topics should be empty if thre is a conversion exception",
+				new ArrayList<HashTag>(), actualSubscriptions);
 	}
 
 	@Test

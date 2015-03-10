@@ -22,6 +22,7 @@ import org.junit.Test;
 import us.iseek.model.exception.UnknownLocationException;
 import us.iseek.model.gps.Location;
 import us.iseek.model.request.topic.CreateSubscriptionRequest;
+import us.iseek.model.request.topic.FindSubscriptionsRequest;
 import us.iseek.model.request.topic.GetUsersInTopicRequest;
 import us.iseek.model.request.topic.UpdateSubscriptionLocationRequest;
 import us.iseek.model.topics.HashTag;
@@ -138,16 +139,17 @@ public class TopicControllerTest {
 
 		// Define expected behavior
 		String expectedDisplayName = "DISPLAYNAME";
-		
+
 		// Set up mock framework
 		this.readyMockFramework();
 
 		// Test entity
 		this.topicController.createTopic(displayName);
 		String actualDisplayName = captureDisplayName.getValue();
-		Assert.assertEquals("CreateTopic should strip special characters from display name.", expectedDisplayName, actualDisplayName);
+		Assert.assertEquals("CreateTopic should strip special characters from display name.", expectedDisplayName,
+				actualDisplayName);
 	}
-	
+
 	@Test
 	public void testThatSubscribeDelegatesCallToService() throws UnknownLocationException {
 		// Create test data
@@ -258,6 +260,34 @@ public class TopicControllerTest {
 		// Test entity
 		List<User> actualUsers = this.topicController.getUsersInTopic(new GetUsersInTopicRequest(topic, location));
 		Assert.assertEquals("GetUsersInTopic should return value returned by delegate.", users, actualUsers);
+	}
+
+	@Test
+	public void testThatFindSubscriptionsDelegatesCallToService() {
+		// Create test data
+		Long userId = Long.valueOf(71234L);
+		Long topicId = Long.valueOf(91283L);
+		Location location = EasyMock.createNiceMock(Location.class);
+
+		FindSubscriptionsRequest findSubscriptionsRequest = EasyMock.createNiceMock(FindSubscriptionsRequest.class);
+		EasyMock.expect(findSubscriptionsRequest.getUserId()).andReturn(userId).anyTimes();
+		EasyMock.expect(findSubscriptionsRequest.getTopicId()).andReturn(topicId).anyTimes();
+		EasyMock.expect(findSubscriptionsRequest.getLocation()).andReturn(location).anyTimes();
+		EasyMock.replay(findSubscriptionsRequest);
+
+		List<Subscription> subscriptions = new ArrayList<Subscription>();
+		subscriptions.add(EasyMock.createNiceMock(Subscription.class));
+
+		// Set expectations
+		EasyMock.expect(this.topicService.findSubscriptions(userId, topicId, location)).andReturn(subscriptions).once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		List<Subscription> actualSubscriptions = this.topicController.findSubscriptions(findSubscriptionsRequest);
+		Assert.assertEquals("FindSubscriptions should return value returned by delegate.", subscriptions,
+				actualSubscriptions);
 	}
 
 	@Test

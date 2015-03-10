@@ -9,10 +9,11 @@
  */
 package us.iseek.services.persistence;
 
+import java.util.List;
+
+import us.iseek.model.gps.Area;
 import us.iseek.model.gps.Location;
-import us.iseek.model.topics.HashTag;
 import us.iseek.model.topics.Subscription;
-import us.iseek.model.user.User;
 
 /**
  * Provides methods to persist user <tt>Subscription</tt>s.
@@ -42,17 +43,18 @@ public interface SubscriptionMapper {
 	/**
 	 * Retrieves the subscription querying by the parameters provided.
 	 * 
-	 * @param user
-	 *            - The user for which the subscriptions are being retrieved.
-	 * @param hashTag
-	 *            - The topic for which the subscriptions are being retrieved.
-	 * @param location
-	 *            - The location for which the subscriptions are being
+	 * @param userId
+	 *            - The ID for the user for which the subscriptions are being
 	 *            retrieved.
+	 * @param hashTagId
+	 *            - The ID for the topic for which the subscriptions are being
+	 *            retrieved.
+	 * @param area
+	 *            - The area for which the subscriptions are being retrieved.
 	 * @return The intersection of all subscriptions for the user, hashTag, and
-	 *         location.
+	 *         locations within the search area.
 	 */
-	public Subscription search(User user, HashTag hashTag, Location location);
+	public List<Subscription> search(Long userId, Long hashTagId, Area area);
 
 	/**
 	 * Renews the last activity timestamp of the subscription, resulting in an

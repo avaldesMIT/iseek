@@ -63,18 +63,33 @@ public class TopicService implements ITopicService {
 	public HashTag createTopic(String displayName) {
 		// Determine if there already is a hash tag with this name
 		HashTag hashTag = this.hashTagMapper.get(displayName);
-		
+
 		// If there is no existing hash tag, create a new one
 		if (hashTag == null) {
 			hashTag = new HashTag();
 			hashTag.setDisplayName(displayName);
-	
+
 			// Insert hash tag
 			this.hashTagMapper.insert(hashTag);
 		}
 
 		// Retrieve and return hash tag
 		return hashTag;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Subscription> findSubscriptions(Long userId, Long topicId, Location location) {
+		location.setMeasurementConverterFactory(this.measurementConverterFactory);
+		try {
+			return this.subscriptionMapper.search(userId, topicId,
+					location.getRadialArea(DEFAULT_RADIUS, MeasureUnit.MILES));
+		} catch (ConversionException e) {
+			// Log error and return an empty list
+			log.error("There was an error computing default area to search subscriptions.", e);
+			return new ArrayList<Subscription>();
+		}
 	}
 
 	/**
@@ -93,7 +108,7 @@ public class TopicService implements ITopicService {
 		this.subscriptionMapper.insert(subscription);
 
 		// Retrieve newly created subscription
-		return this.subscriptionMapper.search(user, topic, user.getLastLocation());
+		return this.subscriptionMapper.get(subscription.getId());
 	}
 
 	/**
