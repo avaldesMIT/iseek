@@ -68,7 +68,7 @@ public class PublicMessage extends Message {
 	 */
 	@Override
 	public String toString() {
-		return "{PrivateMessage: id=" + this.getId() + ", origin=" + this.getOrigin() + ", message="
+		return "{PublicMessage: id=" + this.getId() + ", origin=" + this.getOrigin() + ", message="
 				+ this.getMessage() + ", sentTimestamp=" + this.getSentTimestamp() + ", topic=" + this.topic
 				+ ", location=" + this.location + "}";
 	}

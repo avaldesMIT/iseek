@@ -30,7 +30,7 @@ public interface IMessageService {
 	 * @param message
 	 *            - The message to send, along with the instructions on who to
 	 *            send it to.
-	 * @throws UnsupportedMessageException
+	 * @throws UnsupportedMessageTypeException
 	 *             - If the message type provided is not supported by the
 	 *             system.
 	 */

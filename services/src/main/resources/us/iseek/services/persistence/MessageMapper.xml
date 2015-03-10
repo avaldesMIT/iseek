@@ -5,7 +5,7 @@
 <mapper namespace="us.iseek.services.persistence.MessageMapper">
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Message">
-		INSERT INTO messages (origin_user_id, message_type)
-		values (#{origin.id},#{type})
+		INSERT INTO messages (origin_user_id, message_type, message)
+		values (#{origin.id},#{type},#{message})
 	</insert>
 </mapper>

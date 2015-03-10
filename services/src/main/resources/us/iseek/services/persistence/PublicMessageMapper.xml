@@ -5,7 +5,7 @@
 <mapper namespace="us.iseek.services.persistence.PublicMessageMapper">
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="PrivateMessage">
-		INSERT INTO private_messages (message_id, destination_hash_tag_id, message_lat, message_lon)
+		INSERT INTO public_messages (message_id, destination_hash_tag_id, message_lat, message_lon)
 		VALUES (#{id}, #{topic.id}, #{location.latitude}, #{location.longitude})
 	</insert>
 </mapper>

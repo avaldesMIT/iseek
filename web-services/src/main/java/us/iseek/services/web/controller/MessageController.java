@@ -14,9 +14,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import us.iseek.model.communication.Message;
+import us.iseek.model.communication.PrivateMessage;
+import us.iseek.model.communication.PublicMessage;
 import us.iseek.model.exception.UnsupportedMessageTypeException;
 import us.iseek.services.IMessageService;
 
@@ -29,7 +31,7 @@ import us.iseek.services.IMessageService;
  */
 @RestController
 @RequestMapping("/message")
-public class MessageController implements IMessageService {
+public class MessageController {
 
 	private final Log log = LogFactory.getLog(MessageController.class);
 
@@ -39,7 +41,19 @@ public class MessageController implements IMessageService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void sendMessage(@RequestBody Message message) throws UnsupportedMessageTypeException {
+	@RequestMapping(value = "/public/send", method = RequestMethod.POST)
+	public void sendPublicMessage(@RequestBody PublicMessage message) throws UnsupportedMessageTypeException {
+
+		log.debug("type=RECEIVED_REST_MESSAGE_REQUEST, " + "desc=Received REST request to send message, param="
+				+ message);
+		this.messageService.sendMessage(message);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@RequestMapping(value = "/private/send", method = RequestMethod.POST)
+	public void sendPrivateMessage(@RequestBody PrivateMessage message) throws UnsupportedMessageTypeException {
 
 		log.debug("type=RECEIVED_REST_MESSAGE_REQUEST, " + "desc=Received REST request to send message, param="
 				+ message);

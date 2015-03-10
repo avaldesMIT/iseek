@@ -14,7 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import us.iseek.model.communication.Message;
+import us.iseek.model.communication.PrivateMessage;
+import us.iseek.model.communication.PublicMessage;
 import us.iseek.model.exception.UnsupportedMessageTypeException;
 import us.iseek.services.IMessageService;
 
@@ -41,9 +42,9 @@ public class MessageControllerTest {
 	}
 
 	@Test
-	public void testThatSendMessageDelegatesCallToService() throws UnsupportedMessageTypeException {
+	public void testThatSendPublicMessageDelegatesCallToService() throws UnsupportedMessageTypeException {
 		// Create mocks
-		Message message = EasyMock.createNiceMock(Message.class);
+		PublicMessage message = EasyMock.createNiceMock(PublicMessage.class);
 
 		// Set expectations
 		this.messageService.sendMessage(message);
@@ -53,7 +54,24 @@ public class MessageControllerTest {
 		this.readyMockFramework();
 
 		// Test entity
-		this.messageController.sendMessage(message);
+		this.messageController.sendPublicMessage(message);
+		EasyMock.verify(this.messageService);
+	}
+
+	@Test
+	public void testThatSendPrivateMessageDelegatesCallToService() throws UnsupportedMessageTypeException {
+		// Create mocks
+		PrivateMessage message = EasyMock.createNiceMock(PrivateMessage.class);
+
+		// Set expectations
+		this.messageService.sendMessage(message);
+		EasyMock.expectLastCall().once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		this.messageController.sendPrivateMessage(message);
 		EasyMock.verify(this.messageService);
 	}
 

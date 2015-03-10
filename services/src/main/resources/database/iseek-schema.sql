@@ -156,6 +156,7 @@ CREATE TABLE `messages` (
   `message_id` int(16) NOT NULL AUTO_INCREMENT,
   `origin_user_id` int(16) NOT NULL,
   `message_type` varchar(7) NOT NULL,
+  `message` varchar(512) NOT NULL,
   `ins_user` varchar(12) default NULL,
   `ins_ts` timestamp NULL default NULL,
   `upd_user` varchar(12) default NULL,
