@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import us.iseek.model.exception.UnknownLocationException;
 import us.iseek.model.gps.Location;
 import us.iseek.model.request.topic.CreateSubscriptionRequest;
-import us.iseek.model.request.topic.FindSubscriptionsRequest;
 import us.iseek.model.request.topic.GetUsersInTopicRequest;
 import us.iseek.model.request.topic.UpdateSubscriptionLocationRequest;
 import us.iseek.model.topics.HashTag;
@@ -176,22 +175,17 @@ public class TopicController {
 	/**
 	 * Retrieves the subscription querying by the parameters provided.
 	 * 
-	 * @param findSubscriptionsRequest
-	 *            - The request to find user subscriptions to topic, including
-	 *            the ID for the user for which the subscriptions are being, the
-	 *            ID for the topic for which the subscriptions are being, and
-	 *            the location for which the subscriptions are being retrieved.
-	 *            Note that topics will be retrieved for this location and a
-	 *            radial area around this location.
-	 * @return The intersection of all subscriptions for the user, hashTag, and
-	 *         location provided.
+	 * @param userId
+	 *            - The ID of the user subscribed to the topic
+	 * @param topicId
+	 *            - The ID of the topic the user is subscribed to
+	 * @return The user subscription to the topic provided.
 	 */
 	@RequestMapping(value = "/subscription/find", method = RequestMethod.GET)
-	public List<Subscription> findSubscriptions(@RequestBody FindSubscriptionsRequest findSubscriptionsRequest) {
+	public Subscription findSubscription(@RequestParam Long userId, @RequestParam Long topicId) {
 		log.debug("type=RECEIVED_REST_FIND_SUBSCRIPTIONS_REQUEST, "
-				+ "desc=Received REST request to fins subscriptions, param=" + findSubscriptionsRequest);
-		return this.topicService.findSubscriptions(findSubscriptionsRequest.getUserId(),
-				findSubscriptionsRequest.getTopicId(), findSubscriptionsRequest.getLocation());
+				+ "desc=Received REST request to fins subscriptions, userId=" + userId + ", topicId=" + topicId);
+		return this.topicService.findSubscription(userId, topicId);
 	}
 
 	/**

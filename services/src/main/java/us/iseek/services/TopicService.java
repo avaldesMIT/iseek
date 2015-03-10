@@ -80,16 +80,9 @@ public class TopicService implements ITopicService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Subscription> findSubscriptions(Long userId, Long topicId, Location location) {
-		location.setMeasurementConverterFactory(this.measurementConverterFactory);
-		try {
-			return this.subscriptionMapper.search(userId, topicId,
-					location.getRadialArea(DEFAULT_RADIUS, MeasureUnit.MILES));
-		} catch (ConversionException e) {
-			// Log error and return an empty list
-			log.error("There was an error computing default area to search subscriptions.", e);
-			return new ArrayList<Subscription>();
-		}
+	public Subscription findSubscription(Long userId, Long topicId) {
+		// Find subscriptions
+		return this.subscriptionMapper.find(userId, topicId);
 	}
 
 	/**

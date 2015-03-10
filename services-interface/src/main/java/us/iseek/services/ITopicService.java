@@ -47,20 +47,15 @@ public interface ITopicService {
 	/**
 	 * Retrieves the subscription querying by the parameters provided.
 	 * 
-	 * @param user
+	 * @param userId
 	 *            - The ID for the user for which the subscriptions are being
 	 *            retrieved.
-	 * @param hashTag
+	 * @param topicId
 	 *            - The ID for the topic for which the subscriptions are being
 	 *            retrieved.
-	 * @param location
-	 *            - The location for which the subscriptions are being
-	 *            retrieved. Note that topics will be retrieved for this
-	 *            location and a radial area around this location.
-	 * @return The intersection of all subscriptions for the user, hashTag, and
-	 *         location provided.
+	 * @return The subscription for the user to the topic provided.
 	 */
-	public List<Subscription> findSubscriptions(Long userId, Long topicId, Location location);
+	public Subscription findSubscription(Long userId, Long topicId);
 
 	/**
 	 * Adds a user to a topic of conversation. Requires that the user referenced

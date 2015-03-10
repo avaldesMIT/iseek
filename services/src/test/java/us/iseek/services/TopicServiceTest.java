@@ -480,52 +480,23 @@ public class TopicServiceTest {
 	}
 
 	@Test
-	public void testThatFindSubscriptionsGetsSubscriptionsFiveMilesAroundLocation() throws ConversionException {
+	public void testThatFindSubscriptionGetsUsersSubscriptionToTopic() throws ConversionException {
 		// Create test data
 		Long userId = Long.valueOf(5812L);
 		Long topicId = Long.valueOf(9512L);
 
-		Area area = EasyMock.createNiceMock(Area.class);
-		Location location = EasyMock.createNiceMock(Location.class);
-		EasyMock.expect(location.getRadialArea(Double.valueOf(5d), MeasureUnit.MILES)).andReturn(area).anyTimes();
-		EasyMock.replay(location);
-
-		List<Subscription> subscriptions = new ArrayList<Subscription>();
-		subscriptions.add(EasyMock.createNiceMock(Subscription.class));
+		Subscription subscription = EasyMock.createNiceMock(Subscription.class);
 
 		// Set mock expectations
-		EasyMock.expect(this.subscriptionMapper.search(userId, topicId, area)).andReturn(subscriptions).once();
+		EasyMock.expect(this.subscriptionMapper.find(userId, topicId)).andReturn(subscription).once();
 
 		// Set up mock framework
 		this.readyMockFramework();
 
 		// Test entity
-		List<Subscription> actualSubscriptions = this.topicService.findSubscriptions(userId, topicId, location);
-		Assert.assertEquals("Returned subscriptions should match the subscriptions returned by the database",
-				subscriptions, actualSubscriptions);
-	}
-
-	@Test
-	public void testThatFindSubscriptionsReturnsEmptyListIfThereIsAProblemWithTheMeasurementConversion()
-			throws ConversionException {
-
-		// Create test data
-		Long userId = Long.valueOf(5812L);
-		Long topicId = Long.valueOf(9512L);
-		Location location = EasyMock.createNiceMock(Location.class);
-
-		// Set mock expectations
-		EasyMock.expect(location.getRadialArea(EasyMock.anyDouble(), EasyMock.anyObject(MeasureUnit.class)))
-				.andThrow(new ConversionException("TEST")).anyTimes();
-		EasyMock.replay(location);
-
-		// Set up mock framework
-		this.readyMockFramework();
-
-		// Test entity
-		List<Subscription> actualSubscriptions = this.topicService.findSubscriptions(userId, topicId, location);
-		Assert.assertEquals("Returned topics should be empty if thre is a conversion exception",
-				new ArrayList<HashTag>(), actualSubscriptions);
+		Subscription actualSubscription = this.topicService.findSubscription(userId, topicId);
+		Assert.assertEquals("Returned subscription should match the subscription returned by the database",
+				subscription, actualSubscription);
 	}
 
 	@Test
