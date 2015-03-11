@@ -16,15 +16,11 @@
 	</select>
 
 	<!-- Subscription search(Long userId, Long hashTagId, Area area) -->
-	<select id="search" resultMap="subscriptionResultMap">
+	<select id="find" resultMap="subscriptionResultMap">
 		<include refid="subscriptionSelect"/>
 		<include refid="subscriptionJoins"/>
 		WHERE u.user_id = #{param1}
 		AND h.hash_tag_id = #{param2}
-		AND s.subscription_lat &lt; #{param3.startPoint.latitude}
-		AND s.subscription_lon &gt; #{param3.startPoint.longitude}
-		AND s.subscription_lat &gt; #{param3.endPoint.latitude}
-		AND s.subscription_lon &lt; #{param3.endPoint.longitude}
 		<include refid="subscriptionFilterExpiredSubscriptions"/> 
 	</select>
 	
