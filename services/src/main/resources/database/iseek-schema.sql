@@ -29,6 +29,7 @@ CREATE TABLE `users` (
   `user_id` int(16) NOT NULL AUTO_INCREMENT,
   `fb_profile_id` bigint(64) unsigned NOT NULL,
   `screen_name` varchar(128) default NULL,
+  `gcm_registration` varchar(255) default NULL,
   `last_activity` timestamp NULL default NULL,
   `last_lat` decimal(12,8) default NULL,
   `last_lon` decimal(12,8) default NULL,

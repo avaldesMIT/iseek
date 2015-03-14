@@ -55,6 +55,13 @@
 		WHERE u.user_id = #{param1}
 	</update>
 
+	<!-- updateGcmRegistrationId(Long userId, Long gcmRegistrationId) -->
+	<update id="updateGcmRegistrationId" parameterType="map">
+		UPDATE users u
+		SET u.gcm_registration = #{param2}
+		WHERE u.user_id = #{param1}
+	</update>
+
 	<sql id="userSelect">
 		SELECT
 			u.user_id as userId,

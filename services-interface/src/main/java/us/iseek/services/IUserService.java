@@ -61,6 +61,17 @@ public interface IUserService {
 	public User createUser(Long facebookProfileId, Location location);
 
 	/**
+	 * Updates the user's Google Cloud Messaging registration ID.
+	 * 
+	 * @param userId
+	 * 			- The ID of the user for whom the GCM registration ID is being set.
+	 * @param gcmRegistrationId
+	 * 			- The Google Cloud Messaging registration ID to set.
+	 * @return The user with the updated GCM registration ID
+	 */
+	public User updateGcmRegistrationId(Long userId, String gcmRegistrationId);
+	
+	/**
 	 * Updates the user's preferences.
 	 * 
 	 * @param userId

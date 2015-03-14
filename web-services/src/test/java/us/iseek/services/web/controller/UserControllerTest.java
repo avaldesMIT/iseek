@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import us.iseek.model.gps.Location;
 import us.iseek.model.request.user.CreateUserRequest;
+import us.iseek.model.request.user.UpdateUserGcmRegistrationIdRequest;
 import us.iseek.model.request.user.UpdateUserLocationRequest;
 import us.iseek.model.request.user.UpdateUserPreferencesRequest;
 import us.iseek.model.request.user.UpdateUserScreenNameRequest;
@@ -146,6 +147,24 @@ public class UserControllerTest {
 		// Test entity
 		User actualUser = this.userController.updateScreenName(new UpdateUserScreenNameRequest(USER_ID, screenName));
 		Assert.assertEquals("UpdateScreenName should return value returned by delegate.", this.user, actualUser);
+	}
+
+	@Test
+	public void testThatUpdateGcmRegistrationIdDelegatesCallToService() {
+		// Create test data
+		String gcmRegistrationId = "GMC_REGISTRATION_ID";
+
+		// Set expectations
+		EasyMock.expect(this.userService.updateGcmRegistrationId(USER_ID, gcmRegistrationId)).andReturn(this.user)
+				.once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		User actualUser = this.userController.updateGcmRegistrationId(new UpdateUserGcmRegistrationIdRequest(USER_ID,
+				gcmRegistrationId));
+		Assert.assertEquals("UpdateGcmRegistrationId should return value returned by delegate.", this.user, actualUser);
 	}
 
 	@Test

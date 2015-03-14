@@ -99,4 +99,17 @@ public interface UserMapper {
 	 *            - The user's display name.
 	 */
 	public void updateScreenName(Long userId, String displayName);
+	
+	/**
+	 * Convenience method to update the user's Google Cloud Messaging registration ID.<br>
+	 * <br>
+	 * <b>Note:</b>The user's last activity time stamp is also updated as a
+	 * result of this method.
+	 * 
+	 * @param userId
+	 * 			- The ID of the user for whom the GCM registration ID is being set.
+	 * @param gcmRegistrationId
+	 * 			- The Google Cloud Messaging registration ID to set.
+	 */
+	public void updateGcmRegistrationId(Long userId, String gcmRegistrationId);
 }

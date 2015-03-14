@@ -32,9 +32,9 @@ public class UserServiceTest {
 
 	private static final Long USER_ID = Long.valueOf(1234L);
 	private static final Long FACEBOOK_PROFILE_ID = Long.valueOf(12934L);
-	
+
 	private static final String DEFAULT_SCREEN_NAME = "iSeek User";
-	
+
 	private UserService userService;
 
 	private User user;
@@ -135,10 +135,10 @@ public class UserServiceTest {
 		// Test entity
 		this.userService.createUser(FACEBOOK_PROFILE_ID, location);
 		String actualScreenName = captureUser.getValue().getScreenName();
-		Assert.assertEquals("Create user should create user with default screen name.",
-				DEFAULT_SCREEN_NAME, actualScreenName);
+		Assert.assertEquals("Create user should create user with default screen name.", DEFAULT_SCREEN_NAME,
+				actualScreenName);
 	}
-	
+
 	@Test
 	public void testThatCreateUserInsertsUserToTheDatabaseWithCorrectFacebookProfileIdIfAUserWithTheFacebookProfileIdDoesntExist() {
 		// Create test data
@@ -351,6 +351,42 @@ public class UserServiceTest {
 
 		// Test entity
 		User actualUser = this.userService.updateScreenName(USER_ID, screenName);
+		Assert.assertEquals("UpdatePreferences should return the updated user", this.user, actualUser);
+	}
+
+	@Test
+	public void testThatUpdateGcmRegistrationIdUpdatesTheGcmRegistrationIdForTheUserIdProvided() {
+		// Set test data
+		String gcmRegistrationId = "GMC_REGISTRATION_ID";
+
+		// Set mock expectations
+		Capture<String> gcmRegistrationIdCapture = EasyMock.newCapture();
+		this.userMapper.updateGcmRegistrationId(EasyMock.eq(USER_ID), EasyMock.capture(gcmRegistrationIdCapture));
+		EasyMock.expectLastCall().once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		this.userService.updateGcmRegistrationId(USER_ID, gcmRegistrationId);
+		Assert.assertEquals("Updated screen name should be the screen name in the parameter", gcmRegistrationId,
+				gcmRegistrationIdCapture.getValue());
+		EasyMock.verify(this.userMapper);
+	}
+
+	@Test
+	public void testThatUpdateGcmRegistrationIdReturnsTheUpdatedUserWithTheNewGcmRegistrationId() {
+		// Set test data
+		String gcmRegistrationId = "GMC_REGISTRATION_ID";
+
+		// Set mock expectations
+		EasyMock.expect(this.userMapper.get(USER_ID)).andReturn(this.user).once();
+
+		// Set up mock framework
+		this.readyMockFramework();
+
+		// Test entity
+		User actualUser = this.userService.updateGcmRegistrationId(USER_ID, gcmRegistrationId);
 		Assert.assertEquals("UpdatePreferences should return the updated user", this.user, actualUser);
 	}
 

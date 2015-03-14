@@ -75,6 +75,17 @@ public class UserService implements IUserService {
 	/**
 	 * {@inheritDoc}
 	 */
+	public User updateGcmRegistrationId(Long userId, String gcmRegistrationId) {
+		// Update preferences for this user
+		this.userMapper.updateGcmRegistrationId(userId, gcmRegistrationId);
+
+		// Retrieve updated user
+		return this.userMapper.get(userId);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public User updatePreferences(Long userId, Preferences preferences) {
 		// Update preferences for this user
 		this.preferencesMapper.update(userId, preferences);

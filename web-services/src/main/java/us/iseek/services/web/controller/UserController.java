@@ -19,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import us.iseek.model.request.user.CreateUserRequest;
-import us.iseek.model.request.user.UpdateUserScreenNameRequest;
+import us.iseek.model.request.user.UpdateUserGcmRegistrationIdRequest;
 import us.iseek.model.request.user.UpdateUserLocationRequest;
 import us.iseek.model.request.user.UpdateUserPreferencesRequest;
+import us.iseek.model.request.user.UpdateUserScreenNameRequest;
 import us.iseek.model.user.User;
 import us.iseek.services.IUserService;
 
@@ -145,6 +146,25 @@ public class UserController {
 				+ "desc=Received REST request to update user's display name, param=" + updateUserScreenNameRequest);
 		return this.userService.updateScreenName(updateUserScreenNameRequest.getUserId(),
 				updateUserScreenNameRequest.getScreenName());
+	}
+
+	/**
+	 * Updates the user's Google Cloud Messaging registration ID.
+	 * 
+	 * @param updateUserGcmRegistrationRequest
+	 *            - The request to update the user's GCM registration containing
+	 *            the ID of the user for whom the screen name is being updated
+	 *            and the user's new GCM registration ID.
+	 * @return The user with the updated GCM registration ID.
+	 */
+	@RequestMapping(value = "/updateGcmRegistrationId", method = RequestMethod.POST)
+	public User updateGcmRegistrationId(@RequestBody UpdateUserGcmRegistrationIdRequest updateUserGcmRegistrationRequest) {
+
+		log.debug("type=RECEIVED_REST_UPDATE_USER_GCM_REGISTRATION_REQUEST, "
+				+ "desc=Received REST request to update user's GCM registration ID, param="
+				+ updateUserGcmRegistrationRequest);
+		return this.userService.updateGcmRegistrationId(updateUserGcmRegistrationRequest.getUserId(),
+				updateUserGcmRegistrationRequest.getGcmRegistrationId());
 	}
 
 	/**
