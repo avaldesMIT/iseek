@@ -15,7 +15,7 @@
 		WHERE s.subscription_id = #{value}
 	</select>
 
-	<!-- Subscription search(Long userId, Long hashTagId, Area area) -->
+	<!-- Subscription find(Long userId, Long hashTagId) -->
 	<select id="find" resultMap="subscriptionResultMap">
 		<include refid="subscriptionSelect"/>
 		<include refid="subscriptionJoins"/>

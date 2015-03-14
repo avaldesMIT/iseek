@@ -9,7 +9,10 @@
  */
 package us.iseek.services.persistence;
 
+import java.util.List;
+
 import us.iseek.model.communication.PublicMessage;
+import us.iseek.model.gps.Area;
 
 /**
  * Provides methods to persist user <tt>PublicMessage</tt>s.
@@ -26,4 +29,19 @@ public interface PublicMessageMapper {
 	 *            - The public message to insert to the persistent store.
 	 */
 	public void insert(PublicMessage publicMessage);
+
+	/**
+	 * Retrieves the GCM registration IDs for the recipients of the public
+	 * message referenced by the ID provided.
+	 * 
+	 * @param publicMessageId
+	 *            - The ID of the public message for which the recipients' GCM
+	 *            registration ID is required.
+	 * @param broadcastArea
+	 *            - An area to limit the recipients of this message. Users
+	 *            outside of this area will not be considered as recipients.
+	 * @return A list of GCM registration IDs that correspond to all of the
+	 *         recipients of the public message provided.
+	 */
+	public List<String> getRecipientRegistrationIds(Long publicMessageId, Area broadcastArea);
 }

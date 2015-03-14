@@ -8,4 +8,20 @@
 		INSERT INTO public_messages (message_id, destination_hash_tag_id, message_lat, message_lon)
 		VALUES (#{id}, #{topic.id}, #{location.latitude}, #{location.longitude})
 	</insert>
+
+	<!-- List<String> getRecipientRegistrationIds(Long publicMessageId, Area broadcastArea) -->
+	<select id="getRecipientRegistrationIds" resultType="java.lang.String">
+		SELECT
+			u.gcm_registration
+		FROM users u
+		INNER JOIN subscriptions s on s.user_id = u.user_id
+		INNER JOIN hash_tags h on h.hash_tag_id = s.hash_tag_id
+		INNER JOIN public_messages m on m.destination_hash_tag_id = h.hash_tag_id
+		WHERE m.message_id = #{param1}
+		AND s.subscription_lat &lt; #{param2.startPoint.latitude}
+		AND s.subscription_lon &gt; #{param2.startPoint.longitude}
+		AND s.subscription_lat &gt; #{param2.endPoint.latitude}
+		AND s.subscription_lon &lt; #{param2.endPoint.longitude}
+		<include refid="us.iseek.services.persistence.SubscriptionMapper.subscriptionFilterExpiredSubscriptions"/> 
+	</select>
 </mapper>

@@ -15,7 +15,7 @@ package us.iseek.model.constants;
  * @author Armando Valdes
  * @since 1.0
  */
-public class GeoConstants {
+public final class GeoConstants {
 
 	/**
 	 * Utility constructor

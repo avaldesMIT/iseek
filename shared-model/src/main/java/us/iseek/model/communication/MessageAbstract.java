@@ -11,48 +11,20 @@ package us.iseek.model.communication;
 
 import java.sql.Timestamp;
 
-import us.iseek.model.enums.MessageType;
-import us.iseek.model.user.User;
-
 /**
- * Represents a message being sent in the system.
+ * Represents a summary of the message. Provides references to entities such as
+ * the sender.
  * 
  * @author Armando Valdes
  * @since 1.0
  */
-public abstract class Message {
+public class MessageAbstract {
 
 	private Long id;
-	private User origin;
+	private Long senderUserId;
 	private String message;
+	private String senderScreenName;
 	private Timestamp sentTimestamp;
-
-	/**
-	 * Gets the type of the message being sent.
-	 * 
-	 * @return The message type.
-	 */
-	public abstract MessageType getType();
-
-	/**
-	 * Creates an abstract of this message. Replaces entities such as User with
-	 * ID references to such entities.
-	 * 
-	 * @return an abstract representation of this message.
-	 */
-	public MessageAbstract createMessageAbstract() {
-		MessageAbstract messageAbstract = new MessageAbstract();
-		messageAbstract.setId(this.id);
-		messageAbstract.setMessage(this.message);
-		messageAbstract.setSentTimestamp(this.sentTimestamp);
-
-		// Add sender's user ID if available
-		if (this.origin != null) {
-			messageAbstract.setSenderUserId(this.origin.getId());
-			messageAbstract.setSenderScreenName(this.origin.getScreenName());
-		}
-		return messageAbstract;
-	}
 
 	/**
 	 * @return the id
@@ -70,18 +42,18 @@ public abstract class Message {
 	}
 
 	/**
-	 * @return the origin
+	 * @return the senderUserId
 	 */
-	public User getOrigin() {
-		return this.origin;
+	public Long getSenderUserId() {
+		return this.senderUserId;
 	}
 
 	/**
-	 * @param origin
-	 *            - The origin to set
+	 * @param senderUserId
+	 *            - The senderUserId to set
 	 */
-	public void setOrigin(User origin) {
-		this.origin = origin;
+	public void setSenderUserId(Long senderUserId) {
+		this.senderUserId = senderUserId;
 	}
 
 	/**
@@ -112,5 +84,29 @@ public abstract class Message {
 	 */
 	public void setSentTimestamp(Timestamp sentTimestamp) {
 		this.sentTimestamp = sentTimestamp;
+	}
+
+	/**
+	 * @return the senderScreenName
+	 */
+	public String getSenderScreenName() {
+		return this.senderScreenName;
+	}
+
+	/**
+	 * @param senderScreenName
+	 *            - The senderScreenName to set
+	 */
+	public void setSenderScreenName(String senderScreenName) {
+		this.senderScreenName = senderScreenName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "{MessageAbstract: id=" + this.id + ", senderUserId=" + this.senderUserId + ", senderScreenName="
+				+ this.senderScreenName + ", message=" + this.message + ", sentTimestamp=" + this.sentTimestamp + "}";
 	}
 }

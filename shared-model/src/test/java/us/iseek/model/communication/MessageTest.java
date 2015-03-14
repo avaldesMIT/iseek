@@ -34,6 +34,120 @@ public class MessageTest {
 	}
 
 	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithIdThatWasSet() {
+		// Create mock
+		Long id = Long.valueOf(1234L);
+
+		// Set value
+		this.message.setId(id);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertEquals("CreateMessageAbstract should create abstract with the id that was set.", id,
+				messageAbstract.getId());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithSenderUserIdFromOriginThatWasSet() {
+		// Create mocks
+		Long senderUserId = Long.valueOf(67312L);
+		User origin = EasyMock.createNiceMock(User.class);
+		EasyMock.expect(origin.getId()).andReturn(senderUserId).anyTimes();
+		EasyMock.replay(origin);
+
+		// Set value
+		this.message.setOrigin(origin);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertEquals("CreateMessageAbstract should create abstract with the user ID from origin that was set.",
+				senderUserId, messageAbstract.getSenderUserId());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithSenderScreenNameFromOriginThatWasSet() {
+		// Create mocks
+		String senderScreenName = "SENDER_SCREEN_NAME";
+		User origin = EasyMock.createNiceMock(User.class);
+		EasyMock.expect(origin.getScreenName()).andReturn(senderScreenName).anyTimes();
+		EasyMock.replay(origin);
+
+		// Set value
+		this.message.setOrigin(origin);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertEquals(
+				"CreateMessageAbstract should create abstract with the user screen name from origin that was set.",
+				senderScreenName, messageAbstract.getSenderScreenName());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithNoSenderUserIdIfNoUserWasSet() {
+		// Set value
+		this.message.setOrigin(null);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertNull("CreateMessageAbstract should create abstract with no senderUserId if no origin was set.",
+				messageAbstract.getSenderUserId());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithNoSenderScreenNameIfNoUserWasSet() {
+		// Set value
+		this.message.setOrigin(null);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertNull(
+				"CreateMessageAbstract should create abstract with no senderScreenName if no origin was set.",
+				messageAbstract.getSenderScreenName());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithMessageThatWasSet() {
+		// Create mock
+		String message = "MESSAGE";
+
+		// Set value
+		this.message.setMessage(message);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertEquals("CreateMessageAbstract should create abstract with the message that was set.", message,
+				messageAbstract.getMessage());
+	}
+
+	@Test
+	public void testThatCreateMessageAbstractCreatesAbstractWithSentTimestampThatWasSet() {
+		// Create mock
+		Timestamp sentTimestamp = new Timestamp(1L);
+
+		// Set value
+		this.message.setSentTimestamp(sentTimestamp);
+
+		// Test entity
+		MessageAbstract messageAbstract = this.message.createMessageAbstract();
+
+		// Verify value
+		Assert.assertEquals("CreateMessageAbstract should create abstract with the sentTimestamp that was set.",
+				sentTimestamp, messageAbstract.getSentTimestamp());
+	}
+
+	@Test
 	public void testThatGetIdReturnsTheIdThatWasSet() {
 		// Create mock
 		Long id = Long.valueOf(12345L);

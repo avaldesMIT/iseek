@@ -95,8 +95,22 @@
 	</bean>
 
 	<!-- Message Broadcasters -->
-	<bean id="publicMessageBroadcaster" class="us.iseek.services.messaging.PublicMessageBroadcaster" />
+	<bean id="publicMessageBroadcaster" class="us.iseek.services.messaging.PublicMessageBroadcaster">
+		<property name="restTemplate" ref="restTemplate" />
+		<property name="publicMessageMapper" ref="publicMessageMapper" />
+		<property name="measurementConverterFactory" ref="measurementConverterFactory" />
+	</bean>
 	<bean id="privateMessageBroadcaster" class="us.iseek.services.messaging.PrivateMessageBroadcaster" />
+
+	<!-- Rest template -->
+	<bean id="messageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+		<property name="messageConverters">
+			<list>
+				<ref bean="messageConverter" />
+			</list>
+		</property>
+	</bean>
 	
 	<!-- Converters -->
 	<bean id="milesConverter" class="us.iseek.model.converters.measurement.MilesConverter"/>

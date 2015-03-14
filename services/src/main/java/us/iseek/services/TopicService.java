@@ -15,8 +15,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import us.iseek.model.constants.ApplicationConstants;
 import us.iseek.model.converters.measurement.MeasurementConverterFactory;
-import us.iseek.model.enums.MeasureUnit;
 import us.iseek.model.exception.ConversionException;
 import us.iseek.model.exception.UnknownLocationException;
 import us.iseek.model.gps.Location;
@@ -36,7 +36,6 @@ import us.iseek.services.persistence.UserMapper;
 public class TopicService implements ITopicService {
 
 	private final Log log = LogFactory.getLog(TopicService.class);
-	private static final Double DEFAULT_RADIUS = Double.valueOf(5);
 
 	private UserMapper userMapper;
 	private HashTagMapper hashTagMapper;
@@ -49,7 +48,8 @@ public class TopicService implements ITopicService {
 	public List<HashTag> findTopics(Location location) {
 		location.setMeasurementConverterFactory(this.measurementConverterFactory);
 		try {
-			return this.hashTagMapper.getByArea(location.getRadialArea(DEFAULT_RADIUS, MeasureUnit.MILES));
+			return this.hashTagMapper.getByArea(location.getRadialArea(ApplicationConstants.DEFAULT_RADIUS,
+					ApplicationConstants.DEFAULT_UNIT));
 		} catch (ConversionException e) {
 			// Log error and return an empty list
 			log.error("There was an error computing default area to find topics.", e);
